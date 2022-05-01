@@ -26,6 +26,10 @@ function init() {
   // Create a new Leaflet map centered on the continental US
   map = L.map("map").setView([51.5, -0.1], 14);
 
+  function locateUser() {
+    map.locate({ setView: true });
+  }
+
   // This is the Carto Positron basemap
   L.tileLayer(
     "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png",
@@ -49,9 +53,12 @@ function init() {
     id: panelID,
     tab: "<i class='fa fa-bars active'></i>",
     pane: "<p id='sidebar-content'></p>",
-    title: "<h2 id='sidebar-title'>Nothing selected</h2>",
+    title: "<h2 id='sidebar-title'>Actions</h2>"
   };
   sidebar.addPanel(panelContent);
+
+  document.getElementById("sidebar-content").innerHTML = "<a id='#searchLocationButton' href='#'>Show my location</a>";
+  document.getElementById("#searchLocationButton").addEventListener("click", locateUser);
 
   map.on("click", function () {
     sidebar.close(panelID);
@@ -69,6 +76,25 @@ function init() {
     header: true,
     complete: addPoints,
   });
+
+  // adding a location
+  var market = L.marker([40.488965835254575, 23.02297111980019]).addTo(map);
+     
+  // adding a polygon on map 
+  var latlngs = [[40.48777984499424, 23.023172334006343], [40.489080607393326, 23.02166322746014], [40.48942492263183, 23.021311102599363], [40.48955882252529, 23.022618994939403], [40.489195379335776, 23.023071726903265]];
+  var polygon = L.polygon(latlngs, { color: 'red' }).addTo(map);
+
+  // zooming the map to the polygon
+  map.fitBounds(polygon.getBounds());
+
+    // binding popup
+    market.bindPopup("Point of interest");
+
+    // adding a mouseover event for opening popup
+    market.on('mouseover', function (e) {
+        market.openPopup();
+    });
+
 }
 
 /*
